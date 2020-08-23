@@ -49,7 +49,7 @@ func GetPersonaById(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(salidaJson)
 	} else {
-		http.Error(w, "StatusNotFound", http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 }
 
@@ -65,6 +65,12 @@ func SavePersona(w http.ResponseWriter, r *http.Request) {
 	}
 	//Agrego el nuevo valor a Sample.
 	Sample[persona.Id] = persona
+
+	// Retorno la persona generada
+	salidaJson, _ := json.Marshal(Sample[persona.Id])
+	// Indico que los datos devueltos van en json
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(salidaJson)
 
 }
 
@@ -84,9 +90,15 @@ func EditPersona(w http.ResponseWriter, r *http.Request) {
 		} else {
 			//Actualizo el nuevo valor a Sample.
 			Sample[vars["ID"]] = persona
+			// Retorno la persona modificada
+			salidaJson, _ := json.Marshal(Sample[vars["ID"]])
+			// Indico que los datos devueltos van en json
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(salidaJson)
+
 		}
 	} else {
-		http.Error(w, "StatusNotFound", http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 
 }
@@ -99,7 +111,8 @@ func DelPersona(w http.ResponseWriter, r *http.Request) {
 	//Verifico si existe y eliino o doy un error NotFound
 	if _, ok := Sample[vars["ID"]]; ok {
 		delete(Sample, vars["ID"])
+		http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 	} else {
-		http.Error(w, "StatusNotFound", http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 }
